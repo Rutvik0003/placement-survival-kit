@@ -4,7 +4,7 @@ import { AppShell } from './components/AppShell'
 import { EmptyState } from './components/EmptyState'
 import { Loading } from './components/Loading'
 import { isConfigured } from './lib/supabase'
-import { emptyCopy, setupCopy } from './copy'
+import { setupCopy } from './copy'
 import Home from './pages/Home'
 import Companies from './pages/Companies'
 import CompanyDetail from './pages/CompanyDetail'
@@ -12,8 +12,12 @@ import CompanyForm from './pages/CompanyForm'
 import EventDetail from './pages/EventDetail'
 import EventForm from './pages/EventForm'
 import CheckIn from './pages/CheckIn'
+import Season from './pages/Season'
+import Graveyard from './pages/Graveyard'
+import Badges from './pages/Badges'
+import Offer from './pages/Offer'
+import Wrapped from './pages/Wrapped'
 import Login from './pages/Login'
-import Placeholder from './pages/Placeholder'
 import Settings from './pages/Settings'
 
 export default function App() {
@@ -41,7 +45,12 @@ export default function App() {
         <Route path="events/:id" element={<EventDetail />} />
         <Route path="events/:id/edit" element={<EventForm key="edit" />} />
         <Route path="checkin/:id" element={<CheckIn />} />
-        <Route path="stats" element={<Placeholder kicker="Season so far" title="Stats" empty={emptyCopy.stats} />} />
+        <Route path="season" element={<Season />} />
+        <Route path="graveyard" element={<Graveyard />} />
+        <Route path="badges" element={<Badges />} />
+        <Route path="offer/:id" element={<Offer />} />
+        <Route path="wrapped" element={<Wrapped />} />
+        <Route path="stats" element={<Navigate to="/season" replace />} />
         <Route path="settings" element={<Settings />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Route>

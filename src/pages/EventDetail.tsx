@@ -5,6 +5,8 @@ import { EmptyState } from '../components/EmptyState'
 import { Loading } from '../components/Loading'
 import { ConfirmSheet } from '../components/Sheet'
 import { MoodPicker } from '../components/MoodPicker'
+import { PptRatingForm } from '../components/PptRatingForm'
+import { usePptRatings } from '../hooks/fun'
 import { CompanyTile, StatusStamp, TypeTag } from '../components/Stamps'
 import { useToast } from '../components/Toast'
 import { IconAlert, IconChevron, IconEdit, IconLink, IconTrash } from '../components/Icons'
@@ -25,6 +27,7 @@ export default function EventDetail() {
   const now = useNow(1000)
   const [confirm, setConfirm] = useState(false)
   const save = useSaveEvent()
+  const { data: ratings = [] } = usePptRatings()
 
   // Opening the event counts as "seen" — cancels the escalating nag.
   useEffect(() => {
@@ -182,6 +185,12 @@ export default function EventDetail() {
               toast.show({ message: checkinCopy.reply[mood], duration: 5000 })
             }}
           />
+        </section>
+      )}
+
+      {!upcoming && event.type === 'ppt' && (
+        <section className="mt-6">
+          <PptRatingForm key={ratings.length} eventId={event.id} initial={ratings.find((r) => r.event_id === event.id)} />
         </section>
       )}
 

@@ -11,7 +11,7 @@ import { useSaveSettings, useSettings } from '../hooks/useSettings'
 import { sendTestPush, type PushState } from '../lib/push'
 import { supabase } from '../lib/supabase'
 import { getThemePref, setThemePref, type ThemePref } from '../lib/theme'
-import { installCopy, notifCopy as n, settingsCopy as c } from '../copy'
+import { installCopy, notifCopy as n, settingsCopy as c, funSettingsCopy as f } from '../copy'
 
 function Section({ id, title, hint, children }: { id?: string; title: string; hint?: string; children: ReactNode }) {
   return (
@@ -190,6 +190,49 @@ function NotificationsSection() {
   )
 }
 
+function NumberSetting({ label, hint, value, min, max, onSave }: { label: string; hint: string; value: number; min: number; max: number; onSave: (v: number) => void }) {
+  const [v, setV] = useState(String(value))
+  useEffect(() => setV(String(value)), [value])
+  return (
+    <Card>
+      <div className="flex items-center gap-3">
+        <div className="min-w-0 flex-1">
+          <p className="font-medium">{label}</p>
+          <p className="text-[13.5px] leading-snug text-muted">{hint}</p>
+        </div>
+        <input
+          type="number"
+          inputMode="numeric"
+          min={min}
+          max={max}
+          className="field h-10 w-20 text-center font-mono"
+          value={v}
+          onChange={(e) => setV(e.target.value)}
+          onBlur={() => {
+            const num = Math.round(Number(v))
+            if (Number.isFinite(num) && num >= min && num <= max && num !== value) onSave(num)
+            else setV(String(value))
+          }}
+        />
+      </div>
+    </Card>
+  )
+}
+
+function FunSection() {
+  const { data: settings } = useSettings()
+  const save = useSaveSettings()
+  const toast = useToast()
+  if (!settings) return null
+  const saveIt = (patch: Parameters<typeof save.mutate>[0]) => save.mutate(patch, { onSuccess: () => toast.show({ message: f.saved }) })
+  return (
+    <Section title={f.title} hint={f.hint}>
+      <NumberSetting label={f.ghost.label} hint={f.ghost.hint} value={settings.ghost_after_days} min={1} max={365} onSave={(v) => saveIt({ ghost_after_days: v })} />
+      <NumberSetting label={f.samosas.label} hint={f.samosas.hint} value={settings.samosas_per_ppt} min={0} max={50} onSave={(v) => saveIt({ samosas_per_ppt: v })} />
+    </Section>
+  )
+}
+
 function InstallSection() {
   const install = useInstall()
   if (install.installed)
@@ -229,6 +272,7 @@ export default function Settings() {
       <PageHeader kicker={c.kicker} title={c.title} />
 
       <NotificationsSection />
+      <FunSection />
       <InstallSection />
 
       <Section title={c.appearance.title} hint={c.appearance.hint}>

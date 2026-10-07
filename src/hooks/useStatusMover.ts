@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
+import { useNavigate } from 'react-router-dom'
 import { patchCompanyStatus, useSetStatus } from './queries'
 import { useToast } from '../components/Toast'
 import type { Company, CompanyStatus } from '../lib/types'
@@ -17,6 +18,7 @@ export function useStatusMover() {
   const mutateRef = useRef(mutate)
   mutateRef.current = mutate
   const toast = useToast()
+  const navigate = useNavigate()
   const pending = useRef(
     new Map<string, { from: CompanyStatus; to: CompanyStatus; timer: ReturnType<typeof setTimeout> }>(),
   )
@@ -52,6 +54,14 @@ export function useStatusMover() {
     (company: Pick<Company, 'id' | 'status'>, to: CompanyStatus, message: string) => {
       const existing = pending.current.get(company.id)
       if (existing) clearTimeout(existing.timer)
+      // Offers skip the undo window and go straight to the award ceremony.
+      if (to === 'offer') {
+        pending.current.delete(company.id)
+        patchCompanyStatus(qc, company.id, to)
+        mutateRef.current({ id: company.id, status: to })
+        navigate(`/offer/${company.id}`)
+        return
+      }
       // If a change is already pending, the database still holds its original "from".
       const from = existing?.from ?? company.status
       patchCompanyStatus(qc, company.id, to)
@@ -70,6 +80,6 @@ export function useStatusMover() {
         },
       })
     },
-    [qc, commit, toast],
+    [qc, commit, toast, navigate],
   )
 }

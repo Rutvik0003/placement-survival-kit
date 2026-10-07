@@ -9,10 +9,13 @@ import { CompanyTile, StatusStamp } from '../components/Stamps'
 import { IconPlus, IconSearch } from '../components/Icons'
 import { useCompanies, useEventsFrom } from '../hooks/queries'
 import { useStatusMover } from '../hooks/useStatusMover'
+import { useAllEvents, useHistory, usePptRatings } from '../hooks/fun'
+import { useSettings } from '../hooks/useSettings'
+import { companyNicknames, ghostSuspects } from '../lib/fun'
 import { EVENT_META, STATUS_META, isClosed, nextStatus } from '../lib/meta'
 import { fmtIST, relDay, startOfISTDay } from '../lib/time'
 import type { Company, CompanyStatus, EventRow } from '../lib/types'
-import { companiesCopy as c, statusCopy } from '../copy'
+import { companiesCopy as c, graveyardCopy, nicknameDefs, statusCopy } from '../copy'
 
 type Filter = keyof typeof c.filters
 
@@ -26,12 +29,14 @@ const FILTERS: { key: Filter; match: (s: CompanyStatus) => boolean }[] = [
 
 function CompanyRow({
   company,
+  title,
   nextEvent,
   onPickStatus,
   onAdvance,
   onReject,
 }: {
   company: Company
+  title?: { label: string; emoji: string }
   nextEvent?: EventRow
   onPickStatus: () => void
   onAdvance: () => void
@@ -58,7 +63,16 @@ function CompanyRow({
         <div className="min-w-0 flex-1">
           <p className="truncate font-display text-[17px] font-semibold leading-tight tracking-tight">
             {company.name}
-            {company.nickname && <span className="font-sans text-[14px] font-normal text-muted"> · {company.nickname}</span>}
+            {company.nickname ? (
+              <span className="font-sans text-[14px] font-normal text-muted"> · {company.nickname}</span>
+            ) : (
+              title && (
+                <span className="font-sans text-[13px] font-normal text-muted">
+                  {' '}
+                  · {title.emoji} {title.label}
+                </span>
+              )
+            )}
           </p>
           {nextEvent ? (
             <p className="mt-0.5 truncate text-[13px] text-muted md:hidden">
@@ -105,6 +119,11 @@ export default function Companies() {
   const dayStart = useMemo(() => startOfISTDay(), [])
   const { data: upcoming = [] } = useEventsFrom(dayStart)
   const move = useStatusMover()
+  const { data: allEvents = [] } = useAllEvents()
+  const { data: ratings = [] } = usePptRatings()
+  const { data: history = [] } = useHistory()
+  const { data: settings } = useSettings()
+  const suspects = ghostSuspects(companies, settings?.ghost_after_days ?? 14).length
   const [query, setQuery] = useState('')
   const [picker, setPicker] = useState<Company | null>(null)
   const hasActive = companies.some((co) => !isClosed(co.status))
@@ -198,6 +217,14 @@ export default function Companies() {
             </label>
           </div>
 
+          {suspects > 0 && (
+            <Link
+              to="/graveyard"
+              className="mt-4 flex items-center gap-2 rounded-xl border border-dashed border-ghost/60 px-3 py-2 text-[13.5px] text-ghost hover:bg-card"
+            >
+              👻 {graveyardCopy.suspectsLine(suspects)} →
+            </Link>
+          )}
           <p className="mt-3 text-center font-mono text-[10.5px] text-muted lg:hidden">{c.swipeHint}</p>
 
           {list.length === 0 ? (
@@ -212,6 +239,10 @@ export default function Companies() {
                 <li key={co.id}>
                   <CompanyRow
                     company={co}
+                    title={(() => {
+                      const k = companyNicknames(co, allEvents, ratings, history)[0]
+                      return k ? nicknameDefs[k] : undefined
+                    })()}
                     nextEvent={nextByCompany.get(co.id)}
                     onPickStatus={() => setPicker(co)}
                     onAdvance={() => {

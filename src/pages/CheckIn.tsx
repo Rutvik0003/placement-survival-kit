@@ -1,4 +1,7 @@
+import { useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
+import { PptRatingForm } from '../components/PptRatingForm'
+import { usePptRatings } from '../hooks/fun'
 import { BackBar } from '../components/BackBar'
 import { EmptyState } from '../components/EmptyState'
 import { Loading } from '../components/Loading'
@@ -17,6 +20,8 @@ export default function CheckIn() {
   const save = useSaveEvent()
   const toast = useToast()
   const navigate = useNavigate()
+  const [rating, setRating] = useState(false)
+  const { data: ratings = [] } = usePptRatings()
 
   if (isLoading) return <Loading />
   if (!event)
@@ -50,6 +55,12 @@ export default function CheckIn() {
       <div className="mt-8">
         {notYet ? (
           <p className="text-center text-[15px] text-muted">{c.notYet}</p>
+        ) : rating ? (
+          <PptRatingForm
+            eventId={event.id}
+            initial={ratings.find((r) => r.event_id === event.id)}
+            onDone={() => navigate(`/events/${event.id}`, { replace: true })}
+          />
         ) : (
           <MoodPicker
             size="lg"
@@ -58,7 +69,8 @@ export default function CheckIn() {
             onPick={async (mood) => {
               await save.mutateAsync({ id: event.id, mood })
               toast.show({ message: c.reply[mood], duration: 5000 })
-              navigate(`/events/${event.id}`, { replace: true })
+              if (event.type === 'ppt') setRating(true)
+              else navigate(`/events/${event.id}`, { replace: true })
             }}
           />
         )}

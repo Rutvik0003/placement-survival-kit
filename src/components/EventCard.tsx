@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom'
 import { EVENT_META } from '../lib/meta'
 import { fmtIST } from '../lib/time'
 import type { EventRow } from '../lib/types'
-import { clashCopy } from '../copy'
+import { checkinCopy, clashCopy } from '../copy'
 
 /** One row of the timeline: time column + a quiet card. Colour bar = event type. */
 export function EventCard({
@@ -22,7 +22,7 @@ export function EventCard({
   return (
     <Link
       to={`/events/${event.id}`}
-      className={`group grid grid-cols-[48px_1fr] gap-3 transition-opacity ${past ? 'opacity-50 hover:opacity-90' : ''}`}
+      className={`group grid grid-cols-[48px_1fr] gap-3 transition-opacity ${past && !event.mood ? 'opacity-50 hover:opacity-90' : past ? 'opacity-75 hover:opacity-100' : ''}`}
     >
       <div className="pt-2.5 text-right font-mono leading-tight tabular-nums">
         {showDate && <p className="text-[10px] uppercase tracking-wider text-muted">{fmtIST(event.starts_at, 'd MMM')}</p>}
@@ -38,6 +38,7 @@ export function EventCard({
         <div className="flex items-baseline justify-between gap-3">
           <p className="truncate font-display text-[16px] font-semibold tracking-tight">{event.company?.name ?? '—'}</p>
           <span className={`shrink-0 font-mono text-[10.5px] uppercase tracking-wider ${meta.cls.split(' ')[0]}`}>
+            {event.mood && <span className="mr-1.5 text-[14px] not-italic" title={checkinCopy.moods[event.mood].label}>{checkinCopy.moods[event.mood].emoji}</span>}
             {meta.label}
           </span>
         </div>

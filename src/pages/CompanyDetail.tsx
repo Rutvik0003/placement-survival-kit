@@ -11,12 +11,14 @@ import { useToast } from '../components/Toast'
 import { IconEdit, IconPlus, IconTrash } from '../components/Icons'
 import { useCompany, useCompanyEvents, useDeleteCompany } from '../hooks/queries'
 import { useStatusMover } from '../hooks/useStatusMover'
+import { useHistory, usePptRatings } from '../hooks/fun'
+import { companyNicknames } from '../lib/fun'
 import { findClashes, interval } from '../lib/clash'
 import { PIPELINE, STATUS_META } from '../lib/meta'
 import { supabase } from '../lib/supabase'
 import { daysBetween } from '../lib/time'
 import type { Company, CompanyStatus } from '../lib/types'
-import { commonCopy, companyDetailCopy as c, companyFormCopy, statusCopy } from '../copy'
+import { commonCopy, companyDetailCopy as c, companyFormCopy, nicknameDefs, statusCopy } from '../copy'
 
 const SM_COLS: Record<number, string> = { 1: 'sm:grid-cols-1', 2: 'sm:grid-cols-2', 3: 'sm:grid-cols-3', 4: 'sm:grid-cols-4' }
 
@@ -98,6 +100,8 @@ export default function CompanyDetail() {
   const navigate = useNavigate()
   const toast = useToast()
   const [confirm, setConfirm] = useState(false)
+  const { data: ratings = [] } = usePptRatings()
+  const { data: allHistory = [] } = useHistory()
 
   const { upcoming, past, clashes } = useMemo(() => {
     const nowMs = Date.now()
@@ -119,6 +123,7 @@ export default function CompanyDetail() {
 
   const pick = (s: CompanyStatus) =>
     s !== company.status && move(company, s, statusCopy.moved(company.name, STATUS_META[s].label))
+  const titles = companyNicknames(company, events, ratings, allHistory)
   const silent = daysBetween(company.last_contact_at, new Date())
   const closedStamp = company.status === 'rejected' || company.status === 'ghosted' || company.status === 'offer'
   const facts = [
@@ -173,6 +178,20 @@ export default function CompanyDetail() {
               </div>
             ))}
           </dl>
+        )}
+        {titles.length > 0 && (
+          <ul className="mt-4 flex flex-wrap gap-1.5">
+            {titles.map((k) => (
+              <li
+                key={k}
+                title={nicknameDefs[k].why}
+                className="flex items-center gap-1.5 rounded-full border border-ink/15 bg-highlight/35 px-2.5 py-1 text-[13px] font-medium"
+              >
+                <span>{nicknameDefs[k].emoji}</span>
+                {nicknameDefs[k].label}
+              </li>
+            ))}
+          </ul>
         )}
         <p className="mt-3 font-mono text-[11px] text-muted">{c.lastContact(Math.max(0, silent))}</p>
       </header>

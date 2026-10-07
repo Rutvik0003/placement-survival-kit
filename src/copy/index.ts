@@ -23,3 +23,16 @@ export {
 export { notifCopy, installCopy, checkinCopy } from './notifications'
 // Push notification text is shared with the server — edit it here:
 export * as pushCopy from '../../supabase/functions/_shared/notificationCopy'
+export {
+  graveyardCopy,
+  badgesCopy,
+  badgeDefs,
+  nicknameDefs,
+  chaosCopy,
+  pptCopy,
+  offerCopy,
+  formalsCopy,
+  wrappedCopy,
+  seasonCopy,
+  funSettingsCopy,
+} from './fun'

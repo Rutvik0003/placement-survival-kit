@@ -56,7 +56,7 @@ function seed() {
     mk('Hooli', 'applied', { role: 'SDE-1', ctc_lpa: 24, location: 'Remote', emoji: '🦄' }),
     mk('Stark Industries', 'offer', { role: 'Design Engineer', ctc_lpa: 12, location: 'Chennai', emoji: '⚙️' }),
     mk('Wayne Enterprises', 'rejected', { role: 'Consultant', ctc_lpa: 11 }),
-    mk('Soylent Corp', 'ghosted', { role: 'Sales Trainee', last_contact_at: iso(now - 26 * D) }),
+    mk('Soylent Corp', 'ghosted', { role: 'Sales Trainee', ctc_lpa: 21, created_at: iso(now - 45 * D), last_contact_at: iso(now - 26 * D) }),
   ]
   const C = Object.fromEntries(companies.map((c) => [c.name, c.id]))
   const ev = (company: string, type: string, title: string, start: number, end: number | null, extra: Row = {}): Row => ({
@@ -92,15 +92,24 @@ function seed() {
     ev('Hooli', 'test', 'Coding round', at(3, 18), at(3, 19, 30), { link: 'https://example.com/hooli' }),
     ev('Initech', 'interview', 'HR round', at(5, 11), null),
     ev('Stark Industries', 'interview', 'Final round', at(-6, 15), at(-6, 16)),
+    ev('Globex Bank', 'ppt', 'Pre-placement talk', at(-3, 11), at(-3, 12, 40), { venue: 'Seminar Hall B' }),
   ]
   const history = companies.flatMap((c) => [
     { id: uid(), user_id: USER, company_id: c.id, from_status: null, to_status: 'applied', changed_at: c.created_at },
     ...(c.name === 'Wayne Enterprises'
-      ? [{ id: uid(), user_id: USER, company_id: c.id, from_status: 'applied', to_status: 'interview', changed_at: c.created_at }]
+      ? [{ id: uid(), user_id: USER, company_id: c.id, from_status: 'applied', to_status: 'interview', changed_at: iso(now - 9 * D) }]
+      : []),
+    ...(c.status !== 'applied'
+      ? [{ id: uid(), user_id: USER, company_id: c.id, from_status: 'applied', to_status: c.status, changed_at: iso(now - 4 * D + 3 * H) }]
       : []),
   ])
+  const pptPast = events[events.length - 1]
+  pptPast.mood = 'survived'
+  events.find((e) => e.company_id === C['Stark Industries'])!.mood = 'nailed'
+  const ppt_ratings = [{ event_id: pptPast.id, user_id: USER, snacks_rating: 4, length_rating: 5, could_be_email: true, ran_over: true }]
+  const formals_log = [3, 6, 9].map((n) => ({ user_id: USER, day: new Date(now - n * D + istOffset).toISOString().slice(0, 10) }))
   const settings = [{ user_id: USER, push_enabled: true, quiet_start: null, quiet_end: null, ghost_after_days: 14, samosas_per_ppt: 2 }]
-  return { companies, events, company_status_history: history, settings, push_subscriptions: [], notifications_sent: [] } as Record<
+  return { companies, events, company_status_history: history, settings, push_subscriptions: [], notifications_sent: [], ppt_ratings, formals_log, badges_earned: [] } as Record<
     string,
     Row[]
   >
@@ -115,8 +124,9 @@ class Query {
   private cols = '*'
   constructor(
     private table: string,
-    private op: 'select' | 'insert' | 'update' | 'delete',
+    private op: 'select' | 'insert' | 'update' | 'delete' | 'upsert',
     private payload?: Row,
+    private opts: { onConflict?: string; ignoreDuplicates?: boolean } = {},
   ) {}
   select(cols = '*') {
     this.cols = cols
@@ -128,9 +138,6 @@ class Query {
   }
   is(c: string, v: unknown) {
     this.filters.push((r) => (r[c] ?? null) === v)
-    return this
-  }
-  upsert() {
     return this
   }
   gte(c: string, v: string) {
@@ -161,7 +168,23 @@ class Query {
     const match = (r: Row) => this.filters.every((f) => f(r))
     const now = new Date().toISOString()
     let out: Row[] = []
-    if (this.op === 'insert') {
+    if (this.op === 'upsert') {
+      const keys = (this.opts.onConflict ?? 'id').split(',').filter((k) => k !== 'user_id')
+      const list = Array.isArray(this.payload) ? this.payload : [this.payload!]
+      for (const p of list) {
+        const hit = rows.find((r) => keys.every((k) => r[k] === p[k]))
+        if (hit) {
+          if (!this.opts.ignoreDuplicates) {
+            Object.assign(hit, p)
+            out.push(hit)
+          }
+        } else {
+          const r = { id: uid(), user_id: USER, created_at: now, earned_at: now, ...p }
+          rows.push(r)
+          out.push(r)
+        }
+      }
+    } else if (this.op === 'insert') {
       const r: Row = { id: uid(), user_id: USER, created_at: now, updated_at: now, ...this.payload }
       if (this.table === 'companies') {
         Object.assign(r, { status: r.status ?? 'applied', status_changed_at: now, last_contact_at: now }, { ...this.payload })
@@ -182,7 +205,8 @@ class Query {
         if (this.table === 'events' && p.starts_at && p.starts_at !== r.starts_at) r.reschedule_count++
         if (this.table === 'companies' && p.status && p.status !== r.status) {
           db.company_status_history.push({ id: uid(), company_id: r.id, from_status: r.status, to_status: p.status, changed_at: now })
-          r.status_changed_at = r.last_contact_at = now
+          r.status_changed_at = now
+          if (p.status !== 'ghosted') r.last_contact_at = now
         }
         Object.assign(r, p, { updated_at: now })
       }
@@ -224,7 +248,8 @@ export function createDemoClient() {
       select: (cols?: string) => new Query(table, 'select').select(cols),
       insert: (p: Row) => new Query(table, 'insert', p),
       update: (p: Row) => new Query(table, 'update', p),
-      upsert: (p: Row) => new Query(table, 'insert', p),
+      upsert: (p: Row | Row[], o: { onConflict?: string; ignoreDuplicates?: boolean } = {}) =>
+        new Query(table, 'upsert', p as Row, o),
       delete: () => new Query(table, 'delete'),
     }),
     functions: {

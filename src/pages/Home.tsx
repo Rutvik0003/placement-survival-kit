@@ -5,6 +5,8 @@ import { EventCard } from '../components/EventCard'
 import { NextUp } from '../components/NextUp'
 import { Loading } from '../components/Loading'
 import { RemindersNudge } from '../components/RemindersNudge'
+import { ChaosMeter } from '../components/ChaosMeter'
+import { FormalsCard } from '../components/FormalsCard'
 import { useNow } from '../hooks/useNow'
 import { useCompanies, useEventsFrom } from '../hooks/queries'
 import { findClashes, interval } from '../lib/clash'
@@ -100,7 +102,7 @@ export default function Home() {
   const dayStart = useMemo(() => startOfISTDay(now), [dayKey(now)]) // eslint-disable-line react-hooks/exhaustive-deps
   const { data: events = [], isLoading } = useEventsFrom(dayStart)
 
-  const { days, byDay, clashes, next, clashDays } = useMemo(() => {
+  const { days, byDay, clashes, next, clashDays, weekEvents } = useMemo(() => {
     const days = Array.from({ length: 7 }, (_, i) => addISTDays(dayStart, i))
     const weekEnd = addISTDays(dayStart, 7).getTime()
     const inWeek = events.filter((e) => +new Date(e.starts_at) < weekEnd)
@@ -112,7 +114,8 @@ export default function Home() {
     const clashes = findClashes(inWeek)
     const clashDays = new Set([...clashes.keys()].map((id) => dayKey(inWeek.find((e) => e.id === id)!.starts_at)))
     const next = events.find((e) => interval(e)[1] > Date.now()) ?? null
-    return { days, byDay, clashes, next, clashDays }
+    const weekEvents = inWeek
+    return { days, byDay, clashes, next, clashDays, weekEvents }
   }, [events, dayStart, now]) // `now` so "next" rolls over each minute
 
   const todayKey = dayKey(dayStart)
@@ -121,6 +124,8 @@ export default function Home() {
   const firstUpcoming = todays.findIndex((e) => interval(e)[1] > nowMs)
   const rest = days.slice(1).filter((d) => byDay.get(dayKey(d))?.length)
   const restCount = rest.reduce((n, d) => n + (byDay.get(dayKey(d))?.length ?? 0), 0)
+  const formalsDay = todays.some((e) => e.type === 'ppt' || e.type === 'gd' || e.type === 'interview')
+  const clashPairs = [...clashes.values()].reduce((n, l) => n + l.length, 0) / 2
 
   return (
     <>
@@ -140,9 +145,15 @@ export default function Home() {
       ) : (
         <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_320px] lg:items-start lg:gap-10">
           <div className="min-w-0">
-            <div className="lg:hidden">
+            <div className="space-y-3 lg:hidden">
               <NextUp event={next} />
+              <ChaosMeter events={weekEvents} clashes={clashPairs} />
             </div>
+            {formalsDay && (
+              <div className="mt-3 lg:mt-0">
+                <FormalsCard today={todayKey} />
+              </div>
+            )}
 
             <section id={`day-${todayKey}`} className="scroll-mt-6">
               <SectionTitle count={todays.length}>{t.today}</SectionTitle>
@@ -191,6 +202,7 @@ export default function Home() {
 
           <aside className="hidden space-y-6 lg:sticky lg:top-6 lg:block">
             <NextUp event={next} />
+            <ChaosMeter events={weekEvents} clashes={clashPairs} />
             <WeekStrip days={days} byDay={byDay} clashDays={clashDays} />
             <PipelineSummary />
           </aside>

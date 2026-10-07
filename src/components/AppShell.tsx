@@ -2,6 +2,7 @@ import { Link, NavLink, Outlet, useLocation } from 'react-router-dom'
 import { useEffect, type ComponentType, type SVGProps } from 'react'
 import { IconCompanies, IconPlus, IconSettings, IconStats, IconToday } from './Icons'
 import { LogoMark } from './Logo'
+import { BadgeWatcher } from './BadgeWatcher'
 import { useNow } from '../hooks/useNow'
 import { fmtIST } from '../lib/time'
 import { resyncPush } from '../lib/push'
@@ -11,7 +12,7 @@ type NavItem = { to: string; label: string; icon: ComponentType<SVGProps<SVGSVGE
 const nav: NavItem[] = [
   { to: '/', label: 'Today', icon: IconToday },
   { to: '/companies', label: 'Companies', icon: IconCompanies },
-  { to: '/stats', label: 'Stats', icon: IconStats },
+  { to: '/season', label: 'Season', icon: IconStats },
   { to: '/settings', label: 'Settings', icon: IconSettings },
 ]
 
@@ -32,9 +33,10 @@ export function AppShell() {
     resyncPush()
   }, [])
   // No floating "+" on forms — the save button lives there.
-  const showFab = !/\/(new|edit)$/.test(pathname) && !pathname.startsWith('/checkin')
+  const showFab = !/\/(new|edit)$/.test(pathname) && !/^\/(checkin|offer|wrapped)/.test(pathname)
   return (
     <div className="min-h-dvh lg:grid lg:grid-cols-[248px_1fr]">
+      <BadgeWatcher />
       {/* Desktop sidebar */}
       <aside className="sticky top-0 hidden h-dvh flex-col border-r-[1.5px] border-line px-4 py-6 lg:flex">
         <div className="flex items-center gap-2.5 px-2">
