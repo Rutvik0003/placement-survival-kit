@@ -9,7 +9,6 @@ export const supabase = createClient(url ?? 'http://localhost', key ?? 'missing'
   auth: {
     persistSession: true,
     autoRefreshToken: true,
-    detectSessionInUrl: true,
-    flowType: 'pkce',
+    detectSessionInUrl: false,
   },
 })

@@ -17,7 +17,7 @@ No prep features, no motivational quotes, no CallMeBot/WhatsApp. Web Push is the
 | Dates | `date-fns` + `@date-fns/tz` | All display/scheduling in `Asia/Kolkata` |
 | Confetti | `canvas-confetti` | Offer day mode |
 | Charts | Hand-made with Tailwind (funnel = stacked bars) | No chart library needed |
-| Backend | Supabase free: Postgres, Auth (magic link), RLS | |
+| Backend | Supabase free: Postgres, Auth (email + password), RLS | |
 | Scheduler | Supabase `pg_cron` + `pg_net` → Edge Function `tick` | Runs while app is closed |
 | Push sending | Edge Function (Deno) using a Web Push library (`jsr:@negrel/webpush` or `npm:web-push` — whichever works cleanly in Supabase's Deno runtime; decided in Phase 4) | |
 | Hosting | Vercel Hobby (free) | Auto-deploy from GitHub |
@@ -221,9 +221,8 @@ I'll give click-by-click steps at each phase.
 ## 6. Known free-tier gotchas
 
 - **Supabase pauses free projects after ~7 days with no activity.** During placement season you'll use it daily, so this shouldn't bite. If you stop opening it for a week+, it may pause and reminders stop until you click "Restore" in the dashboard.
-- **Supabase's built-in email sender is heavily rate-limited (a few emails/hour).** Fine for one person — you log in once per device and stay logged in. Don't spam the "send magic link" button.
 - **iPhone push** requires iOS 16.4+ and the app added to the Home Screen. The app will detect iOS Safari and show an "Add to Home Screen first" guide.
-- **Login on iPhone:** magic links open in Safari, not the home-screen app, so the login screen also accepts the **6-digit code** from the same email, typed in-app.
+- **Login is email + password, not magic link.** Supabase now requires your own SMTP server to customise emails, and magic links open in Safari instead of the iPhone home-screen app. Password login needs no email at all; your single user is created by hand in the dashboard.
 - **Sign-ups get locked** after your first login (a Supabase toggle), so nobody else can create an account on your app.
 
 ---
@@ -231,7 +230,7 @@ I'll give click-by-click steps at each phase.
 ## 7. Phases
 
 1. **Plan** — this document. ✅
-2. **Foundation** — scaffold Vite/React/TS/Tailwind/PWA, Supabase project, magic-link login, schema + RLS migrations, deploy to Vercel.
+2. **Foundation** — scaffold Vite/React/TS/Tailwind/PWA, Supabase project, email + password login, schema + RLS migrations, deploy to Vercel.
 3. **Core tracking** — companies, events, status pipeline (tap/swipe), Today/This-week timeline with pinned countdown, clash detector.
 4. **Notifications** — push subscription, service worker, `tick`/`ack`/`send-test` functions, pg_cron, digest/heads-up/nag/check-in, idempotency, iOS install prompt, quiet hours, settings.
 5. **Fun layer** — snarky copy bank, check-ins, ghost graveyard, rejection badges, company nicknames, chaos meter, PPT ratings, nag escalation, offer day mode, Placement Wrapped, formals counter.

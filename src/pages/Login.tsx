@@ -7,11 +7,10 @@ import { LogoMark } from '../components/Logo'
 import { IconArrow } from '../components/Icons'
 import { fmtIST, nowIST } from '../lib/time'
 
-function explain(err: AuthError, stage: 'send' | 'verify') {
+function explain(err: AuthError) {
   const msg = err.message.toLowerCase()
   if (err.status === 429 || msg.includes('rate')) return c.errors.rate
-  if (msg.includes('signup') || msg.includes('not allowed')) return c.errors.signupsClosed
-  if (stage === 'verify') return c.errors.badCode
+  if (err.status === 400 || msg.includes('invalid')) return c.errors.badLogin
   return c.errors.generic
 }
 
@@ -25,31 +24,17 @@ const stamps = [
 
 export default function Login() {
   const [email, setEmail] = useState('')
-  const [code, setCode] = useState('')
-  const [stage, setStage] = useState<'email' | 'code'>('email')
+  const [password, setPassword] = useState('')
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  async function sendCode(e: FormEvent) {
+  async function signIn(e: FormEvent) {
     e.preventDefault()
     setBusy(true)
     setError(null)
-    const { error } = await supabase.auth.signInWithOtp({
-      email: email.trim(),
-      options: { emailRedirectTo: window.location.origin },
-    })
+    const { error } = await supabase.auth.signInWithPassword({ email: email.trim(), password })
     setBusy(false)
-    if (error) return setError(explain(error, 'send'))
-    setStage('code')
-  }
-
-  async function verify(e: FormEvent) {
-    e.preventDefault()
-    setBusy(true)
-    setError(null)
-    const { error } = await supabase.auth.verifyOtp({ email: email.trim(), token: code.trim(), type: 'email' })
-    setBusy(false)
-    if (error) setError(explain(error, 'verify'))
+    if (error) setError(explain(error))
     // On success, AuthProvider picks up the session and the app renders.
   }
 
@@ -97,69 +82,42 @@ export default function Login() {
           </div>
           <div className="perf mx-4" />
 
-          {stage === 'email' ? (
-            <form onSubmit={sendCode} className="space-y-4 px-6 pb-6 pt-5">
-              <div>
-                <label htmlFor="email" className="label">
-                  {c.emailLabel}
-                </label>
-                <input
-                  id="email"
-                  type="email"
-                  inputMode="email"
-                  autoComplete="email"
-                  required
-                  className="field"
-                  placeholder={c.emailPlaceholder}
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                />
-              </div>
-              <button type="submit" className="btn btn-marker w-full" disabled={busy || !email}>
-                {busy ? c.sending : c.send}
-                {!busy && <IconArrow width={18} height={18} />}
-              </button>
-            </form>
-          ) : (
-            <form onSubmit={verify} className="space-y-4 px-6 pb-6 pt-5">
-              <div>
-                <p className="font-display text-lg font-semibold">{c.codeSentTitle}</p>
-                <p className="mt-1 text-[14px] leading-relaxed text-muted">{c.codeSentBody(email.trim())}</p>
-              </div>
-              <div>
-                <label htmlFor="code" className="label">
-                  {c.codeLabel}
-                </label>
-                <input
-                  id="code"
-                  inputMode="numeric"
-                  autoComplete="one-time-code"
-                  pattern="[0-9]{6,10}"
-                  maxLength={10}
-                  required
-                  autoFocus
-                  className="field text-center font-mono text-2xl tracking-[0.4em]"
-                  placeholder="••••••"
-                  value={code}
-                  onChange={(e) => setCode(e.target.value.replace(/\D/g, ''))}
-                />
-              </div>
-              <button type="submit" className="btn btn-marker w-full" disabled={busy || code.length < 6}>
-                {busy ? c.verifying : c.verify}
-              </button>
-              <button
-                type="button"
-                className="btn btn-ghost h-9 w-full text-[14px]"
-                onClick={() => {
-                  setStage('email')
-                  setCode('')
-                  setError(null)
-                }}
-              >
-                {c.resend}
-              </button>
-            </form>
-          )}
+          <form onSubmit={signIn} className="space-y-4 px-6 pb-6 pt-5">
+            <div>
+              <label htmlFor="email" className="label">
+                {c.emailLabel}
+              </label>
+              <input
+                id="email"
+                type="email"
+                inputMode="email"
+                autoComplete="username"
+                required
+                className="field"
+                placeholder={c.emailPlaceholder}
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+            </div>
+            <div>
+              <label htmlFor="password" className="label">
+                {c.passwordLabel}
+              </label>
+              <input
+                id="password"
+                type="password"
+                autoComplete="current-password"
+                required
+                className="field"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+            </div>
+            <button type="submit" className="btn btn-marker w-full" disabled={busy || !email || !password}>
+              {busy ? c.submitting : c.submit}
+              {!busy && <IconArrow width={18} height={18} />}
+            </button>
+          </form>
 
           {error && (
             <p role="alert" className="mx-6 mb-6 -mt-1 rounded-lg border-[1.5px] border-stamp-red/40 bg-stamp-red/8 px-3 py-2.5 text-[14px] text-stamp-red">
