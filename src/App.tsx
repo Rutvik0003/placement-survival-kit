@@ -6,6 +6,11 @@ import { Loading } from './components/Loading'
 import { isConfigured } from './lib/supabase'
 import { emptyCopy, setupCopy } from './copy'
 import Home from './pages/Home'
+import Companies from './pages/Companies'
+import CompanyDetail from './pages/CompanyDetail'
+import CompanyForm from './pages/CompanyForm'
+import EventDetail from './pages/EventDetail'
+import EventForm from './pages/EventForm'
 import Login from './pages/Login'
 import Placeholder from './pages/Placeholder'
 import Settings from './pages/Settings'
@@ -27,7 +32,13 @@ export default function App() {
     <Routes>
       <Route element={<AppShell />}>
         <Route index element={<Home />} />
-        <Route path="companies" element={<Placeholder kicker="The roster" title="Companies" empty={emptyCopy.companies} />} />
+        <Route path="companies" element={<Companies />} />
+        <Route path="companies/new" element={<CompanyForm />} />
+        <Route path="companies/:id" element={<CompanyDetail />} />
+        <Route path="companies/:id/edit" element={<CompanyForm key="edit" />} />
+        <Route path="events/new" element={<EventForm />} />
+        <Route path="events/:id" element={<EventDetail />} />
+        <Route path="events/:id/edit" element={<EventForm key="edit" />} />
         <Route path="stats" element={<Placeholder kicker="Season so far" title="Stats" empty={emptyCopy.stats} />} />
         <Route path="settings" element={<Settings />} />
         <Route path="*" element={<Navigate to="/" replace />} />

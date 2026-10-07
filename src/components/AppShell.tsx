@@ -1,6 +1,6 @@
-import { NavLink, Outlet } from 'react-router-dom'
+import { Link, NavLink, Outlet, useLocation } from 'react-router-dom'
 import type { ComponentType, SVGProps } from 'react'
-import { IconCompanies, IconSettings, IconStats, IconToday } from './Icons'
+import { IconCompanies, IconPlus, IconSettings, IconStats, IconToday } from './Icons'
 import { LogoMark } from './Logo'
 import { useNow } from '../hooks/useNow'
 import { fmtIST } from '../lib/time'
@@ -26,6 +26,9 @@ function Clock() {
 }
 
 export function AppShell() {
+  const { pathname } = useLocation()
+  // No floating "+" on forms — the save button lives there.
+  const showFab = !/\/(new|edit)$/.test(pathname)
   return (
     <div className="min-h-dvh lg:grid lg:grid-cols-[248px_1fr]">
       {/* Desktop sidebar */}
@@ -37,7 +40,10 @@ export function AppShell() {
             <p className="mt-1 font-mono text-[10px] uppercase tracking-[0.14em] text-muted">Placement season</p>
           </div>
         </div>
-        <nav className="mt-8 flex flex-col gap-1" aria-label="Main">
+        <Link to="/events/new" className="btn btn-marker mt-7 w-full">
+          <IconPlus width={18} height={18} /> Add event
+        </Link>
+        <nav className="mt-6 flex flex-col gap-1" aria-label="Main">
           {nav.map(({ to, label, icon: Icon }) => (
             <NavLink
               key={to}
@@ -63,6 +69,17 @@ export function AppShell() {
       <main className="pt-safe mx-auto w-full max-w-5xl px-4 pb-28 sm:px-6 lg:px-10 lg:pb-12 lg:pt-6">
         <Outlet />
       </main>
+
+      {/* Mobile: floating add button */}
+      {showFab && (
+        <Link
+          to="/events/new"
+          aria-label="Add event"
+          className="fixed bottom-[calc(env(safe-area-inset-bottom)+5rem)] right-4 z-30 grid h-14 w-14 place-items-center rounded-2xl border-[1.5px] border-ink bg-marker text-marker-ink shadow-[3px_3px_0_var(--ink)] transition-transform active:translate-x-[2px] active:translate-y-[2px] active:shadow-[1px_1px_0_var(--ink)] lg:hidden"
+        >
+          <IconPlus width={26} height={26} strokeWidth={2.2} />
+        </Link>
+      )}
 
       {/* Mobile bottom bar */}
       <nav

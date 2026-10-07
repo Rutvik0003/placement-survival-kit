@@ -64,3 +64,58 @@ export const IconAuto = (p: P) => (
     <path d="M12 4a8 8 0 0 1 0 16z" fill="currentColor" stroke="none" />
   </svg>
 )
+export const IconPlus = (p: P) => (
+  <svg {...base(p)}>
+    <path d="M12 5v14M5 12h14" />
+  </svg>
+)
+export const IconBack = (p: P) => (
+  <svg {...base(p)}>
+    <path d="M15 5l-7 7 7 7" />
+  </svg>
+)
+export const IconChevron = (p: P) => (
+  <svg {...base(p)}>
+    <path d="M9 5l7 7-7 7" />
+  </svg>
+)
+export const IconLink = (p: P) => (
+  <svg {...base(p)}>
+    <path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1" />
+    <path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1" />
+  </svg>
+)
+export const IconPin = (p: P) => (
+  <svg {...base(p)}>
+    <path d="M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 0 1 13 0c0 5.4-6.5 11-6.5 11z" />
+    <circle cx="12" cy="10" r="2.3" />
+  </svg>
+)
+export const IconClock = (p: P) => (
+  <svg {...base(p)}>
+    <circle cx="12" cy="12" r="8.5" />
+    <path d="M12 7.5V12l3 2" />
+  </svg>
+)
+export const IconSearch = (p: P) => (
+  <svg {...base(p)}>
+    <circle cx="11" cy="11" r="6.5" />
+    <path d="M20 20l-4.2-4.2" />
+  </svg>
+)
+export const IconTrash = (p: P) => (
+  <svg {...base(p)}>
+    <path d="M4.5 7h15M10 7V4.5h4V7M6.5 7l1 13h9l1-13" />
+  </svg>
+)
+export const IconEdit = (p: P) => (
+  <svg {...base(p)}>
+    <path d="M4 20h4L19 9l-4-4L4 16v4zM13.5 6.5l4 4" />
+  </svg>
+)
+export const IconAlert = (p: P) => (
+  <svg {...base(p)}>
+    <path d="M12 4 2.8 19.5h18.4L12 4z" />
+    <path d="M12 10v4M12 17v.01" />
+  </svg>
+)

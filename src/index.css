@@ -23,6 +23,7 @@
   --stamp-red: #c8352a;
   --stamp-blue: #2f5bd3;
   --stamp-amber: #b7791f;
+  --stamp-violet: #7b4fd6;
   --ghost: #8b8fa3;
   --grain-opacity: 0.35;
   color-scheme: light;
@@ -43,6 +44,7 @@
   --stamp-red: #ff6b5e;
   --stamp-blue: #7c9cff;
   --stamp-amber: #e3a948;
+  --stamp-violet: #b59bff;
   --ghost: #8f94a8;
   --grain-opacity: 0.18;
   color-scheme: dark;
@@ -63,6 +65,7 @@
   --color-stamp-red: var(--stamp-red);
   --color-stamp-blue: var(--stamp-blue);
   --color-stamp-amber: var(--stamp-amber);
+  --color-stamp-violet: var(--stamp-violet);
   --color-ghost: var(--ghost);
 
   --font-display: 'Bricolage Grotesque Variable', ui-sans-serif, system-ui, sans-serif;
@@ -212,4 +215,26 @@
 }
 .stamp-in {
   animation: stamp-in 0.45s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+@keyframes sheet-in {
+  from {
+    transform: translateY(24px);
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+.sheet-in {
+  animation: sheet-in 0.28s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+/* Hide scrollbars on horizontal chip rows but keep them scrollable. */
+.no-scrollbar {
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
 }
