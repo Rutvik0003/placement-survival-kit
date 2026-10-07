@@ -161,7 +161,7 @@ export default function CompanyDetail() {
         </div>
         {facts.length > 0 && (
           <dl
-            className={`mt-5 grid grid-cols-2 gap-px overflow-hidden rounded-xl border-[1.5px] border-line bg-line ${SM_COLS[facts.length]}`}
+            className={`mt-5 grid grid-cols-2 gap-px overflow-hidden rounded-xl border border-line bg-line ${SM_COLS[facts.length]}`}
           >
             {facts.map((f, i) => (
               <div
@@ -177,7 +177,7 @@ export default function CompanyDetail() {
         <p className="mt-3 font-mono text-[11px] text-muted">{c.lastContact(Math.max(0, silent))}</p>
       </header>
 
-      <section className="rounded-2xl border-[1.5px] border-ink bg-card px-3 pb-4 pt-4 sm:px-5">
+      <section className="rounded-2xl border border-line bg-card px-3 pb-4 pt-4 sm:px-5">
         <p className="label px-1">{c.pipeline}</p>
         <Stepper company={company} onPick={pick} />
         <div className="mt-4 grid grid-cols-2 gap-2 border-t-[1.5px] border-dashed border-line pt-3">

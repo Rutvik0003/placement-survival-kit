@@ -27,7 +27,7 @@ export function NextUp({ event }: { event: EventRow | null }) {
   const meta = EVENT_META[event.type]
 
   return (
-    <div className="rise relative overflow-hidden rounded-2xl border-[1.5px] border-ink bg-ink text-paper shadow-[4px_4px_0_var(--marker)]">
+    <div className="rise relative overflow-hidden rounded-2xl bg-ink text-paper">
       <Link to={`/events/${event.id}`} className="block px-5 pb-4 pt-4">
         <div className="flex items-center justify-between gap-3">
           <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-paper/60">
@@ -43,7 +43,7 @@ export function NextUp({ event }: { event: EventRow | null }) {
               c.kicker
             )}
           </p>
-          <span className={`stamp border-paper/30 text-paper/80`}>{meta.label}</span>
+          <span className="font-mono text-[11px] uppercase tracking-[0.14em] text-paper/60">{meta.label}</span>
         </div>
 
         <div className="mt-3 flex items-end justify-between gap-4">
@@ -83,7 +83,7 @@ export function NextUp({ event }: { event: EventRow | null }) {
           href={event.link}
           target="_blank"
           rel="noreferrer"
-          className="flex h-11 items-center justify-center gap-2 border-t-[1.5px] border-paper/15 bg-marker font-medium text-marker-ink transition-opacity hover:opacity-90"
+          className="flex h-11 items-center justify-center gap-2 bg-marker font-medium text-marker-ink transition-opacity hover:opacity-90"
         >
           <IconLink width={17} height={17} /> {c.openLink}
         </a>

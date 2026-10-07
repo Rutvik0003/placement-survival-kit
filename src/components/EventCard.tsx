@@ -1,12 +1,10 @@
 import { Link } from 'react-router-dom'
-import { CompanyTile, TypeTag } from './Stamps'
-import { IconAlert, IconLink, IconPin } from './Icons'
 import { EVENT_META } from '../lib/meta'
-import { fmtIST, durationLabel } from '../lib/time'
+import { fmtIST } from '../lib/time'
 import type { EventRow } from '../lib/types'
 import { clashCopy } from '../copy'
 
-/** One row of the timeline: time column + ticket-ish card. */
+/** One row of the timeline: time column + a quiet card. Colour bar = event type. */
 export function EventCard({
   event,
   clashes = [],
@@ -19,62 +17,35 @@ export function EventCard({
   showDate?: boolean
 }) {
   const meta = EVENT_META[event.type]
-  const mins = event.ends_at ? Math.round((+new Date(event.ends_at) - +new Date(event.starts_at)) / 60000) : null
   const clash = clashes.length > 0
+  const sub = [event.title, event.venue].filter(Boolean).join(' · ')
   return (
     <Link
       to={`/events/${event.id}`}
-      className={`group grid grid-cols-[52px_1fr] gap-3 rounded-2xl transition-opacity ${past ? 'opacity-55 hover:opacity-90' : ''}`}
+      className={`group grid grid-cols-[48px_1fr] gap-3 transition-opacity ${past ? 'opacity-50 hover:opacity-90' : ''}`}
     >
-      <div className="pt-3 text-right font-mono leading-tight tabular-nums">
+      <div className="pt-2.5 text-right font-mono leading-tight tabular-nums">
         {showDate && <p className="text-[10px] uppercase tracking-wider text-muted">{fmtIST(event.starts_at, 'd MMM')}</p>}
-        <p className="text-[15px] font-medium">{fmtIST(event.starts_at, 'HH:mm')}</p>
-        {event.ends_at && <p className="text-[12px] text-muted">{fmtIST(event.ends_at, 'HH:mm')}</p>}
+        <p className="text-[14px] font-medium">{fmtIST(event.starts_at, 'HH:mm')}</p>
+        {event.ends_at && <p className="text-[11px] text-muted">{fmtIST(event.ends_at, 'HH:mm')}</p>}
       </div>
       <div
-        className={`relative overflow-hidden rounded-2xl border-[1.5px] bg-card py-3 pl-4 pr-3 transition-[transform,box-shadow] group-hover:-translate-y-px group-hover:shadow-[3px_3px_0_var(--ink)] ${
-          clash ? 'border-stamp-red' : 'border-ink'
+        className={`relative overflow-hidden rounded-xl border bg-card py-2.5 pl-4 pr-3 transition-colors ${
+          clash ? 'border-stamp-red/60' : 'border-line group-hover:border-ink/40'
         }`}
       >
-        <span aria-hidden className={`absolute inset-y-0 left-0 w-1.5 ${meta.bar}`} />
-        <div className="flex items-start gap-3">
-          <div className="min-w-0 flex-1">
-            <div className="flex flex-wrap items-center gap-1.5">
-              <TypeTag type={event.type} />
-              {mins !== null && mins > 0 && (
-                <span className="font-mono text-[11px] text-muted">{durationLabel(mins)}</span>
-              )}
-              {past && event.mood == null && <span className="font-mono text-[11px] text-muted">· done</span>}
-            </div>
-            <p className="mt-1.5 truncate font-display text-[17px] font-semibold leading-snug tracking-tight">
-              {event.company?.name ?? '—'}
-            </p>
-            <p className="truncate text-[14px] text-ink-2">{event.title}</p>
-            {(event.venue || event.link) && (
-              <p className="mt-1 flex items-center gap-3 truncate text-[13px] text-muted">
-                {event.venue && (
-                  <span className="flex min-w-0 items-center gap-1">
-                    <IconPin width={14} height={14} className="shrink-0" />
-                    <span className="truncate">{event.venue}</span>
-                  </span>
-                )}
-                {event.link && (
-                  <span className="flex shrink-0 items-center gap-1">
-                    <IconLink width={14} height={14} /> link
-                  </span>
-                )}
-              </p>
-            )}
-          </div>
-          {event.company && <CompanyTile company={event.company} size={36} />}
+        <span aria-hidden className={`absolute inset-y-2 left-1.5 w-[3px] rounded-full ${meta.bar}`} />
+        <div className="flex items-baseline justify-between gap-3">
+          <p className="truncate font-display text-[16px] font-semibold tracking-tight">{event.company?.name ?? '—'}</p>
+          <span className={`shrink-0 font-mono text-[10.5px] uppercase tracking-wider ${meta.cls.split(' ')[0]}`}>
+            {meta.label}
+          </span>
         </div>
+        {sub && <p className="mt-0.5 truncate text-[13.5px] text-muted">{sub}</p>}
         {clash && (
-          <p className="mt-2.5 flex items-start gap-1.5 border-t-[1.5px] border-dashed border-stamp-red/40 pt-2 text-[12.5px] leading-snug text-stamp-red">
-            <IconAlert width={15} height={15} className="mt-px shrink-0" />
-            <span>
-              {clashCopy.overlapsWith}{' '}
-              {clashes.map((c) => `${c.company?.name ?? c.title} (${fmtIST(c.starts_at, 'HH:mm')})`).join(', ')}
-            </span>
+          <p className="mt-1.5 truncate text-[12.5px] text-stamp-red">
+            ⚠ {clashCopy.overlapsWith}{' '}
+            {clashes.map((c) => `${c.company?.name ?? c.title} ${fmtIST(c.starts_at, 'HH:mm')}`).join(', ')}
           </p>
         )}
       </div>

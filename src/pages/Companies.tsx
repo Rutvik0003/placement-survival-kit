@@ -52,23 +52,23 @@ function CompanyRow({
     >
       <Link
         to={`/companies/${company.id}`}
-        className="flex items-center gap-3 rounded-2xl border-[1.5px] border-line bg-card px-3.5 py-3 transition-colors hover:border-ink md:gap-4 md:px-4"
+        className="flex items-center gap-3 rounded-2xl border border-line bg-card px-3.5 py-3 transition-colors hover:border-ink/40 md:gap-4 md:px-4"
       >
-        <CompanyTile company={company} />
+        <CompanyTile company={company} size={40} />
         <div className="min-w-0 flex-1">
           <p className="truncate font-display text-[17px] font-semibold leading-tight tracking-tight">
             {company.name}
             {company.nickname && <span className="font-sans text-[14px] font-normal text-muted"> · {company.nickname}</span>}
           </p>
-          {meta && <p className="mt-0.5 truncate text-[13px] text-muted">{meta}</p>}
-          <p className="mt-1 truncate font-mono text-[11px] uppercase tracking-wider text-muted md:hidden">
-            {nextEvent ? (
-              <>
-                <span className={EVENT_META[nextEvent.type].cls.split(' ')[0]}>{EVENT_META[nextEvent.type].label}</span> ·{' '}
-                {relDay(nextEvent.starts_at)} {fmtIST(nextEvent.starts_at, 'HH:mm')}
-              </>
-            ) : null}
-          </p>
+          {nextEvent ? (
+            <p className="mt-0.5 truncate text-[13px] text-muted md:hidden">
+              <span className={EVENT_META[nextEvent.type].cls.split(' ')[0]}>{EVENT_META[nextEvent.type].label}</span> ·{' '}
+              {relDay(nextEvent.starts_at)} {fmtIST(nextEvent.starts_at, 'HH:mm')}
+            </p>
+          ) : (
+            meta && <p className="mt-0.5 truncate text-[13px] text-muted md:hidden">{meta}</p>
+          )}
+          {meta && <p className="mt-0.5 hidden truncate text-[13px] text-muted md:block">{meta}</p>}
         </div>
         <div className="hidden w-44 shrink-0 font-mono text-[12px] text-muted md:block">
           {nextEvent ? (
@@ -176,8 +176,8 @@ export default function Companies() {
                   role="tab"
                   aria-selected={active === key}
                   onClick={() => setFilter(key)}
-                  className={`flex h-9 shrink-0 items-center gap-1.5 rounded-full border-[1.5px] px-3.5 text-[14px] font-medium transition-colors ${
-                    active === key ? 'border-ink bg-ink text-paper' : 'border-line text-ink-2 hover:border-ink'
+                  className={`flex h-8 shrink-0 items-center gap-1.5 rounded-full border px-3 text-[14px] font-medium transition-colors ${
+                    active === key ? 'border-ink bg-ink text-paper' : 'border-line text-ink-2 hover:border-ink/40'
                   }`}
                 >
                   {c.filters[key]}
@@ -190,7 +190,7 @@ export default function Companies() {
               <IconSearch width={18} height={18} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted" />
               <input
                 type="search"
-                className="field h-10 pl-9 text-[15px]"
+                className="field h-10 border pl-9 text-[15px]"
                 placeholder={c.search}
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
@@ -198,7 +198,7 @@ export default function Companies() {
             </label>
           </div>
 
-          <p className="mt-4 font-mono text-[11px] text-muted lg:hidden">{c.swipeHint}</p>
+          <p className="mt-3 text-center font-mono text-[10.5px] text-muted lg:hidden">{c.swipeHint}</p>
 
           {list.length === 0 ? (
             query ? (

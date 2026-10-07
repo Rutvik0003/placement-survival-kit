@@ -29,8 +29,8 @@ function Chip({ active, onClick, children }: { active: boolean; onClick: () => v
       type="button"
       onClick={onClick}
       aria-pressed={active}
-      className={`flex h-9 shrink-0 items-center gap-1.5 rounded-full border-[1.5px] px-3.5 text-[14px] font-medium transition-colors ${
-        active ? 'border-ink bg-ink text-paper' : 'border-line bg-card text-ink-2 hover:border-ink'
+      className={`flex h-9 shrink-0 items-center gap-1.5 rounded-full border px-3.5 text-[14px] font-medium transition-colors ${
+        active ? 'border-ink bg-ink text-paper' : 'border-line bg-card text-ink-2 hover:border-ink/40'
       }`}
     >
       {children}
@@ -252,7 +252,7 @@ export default function EventForm() {
         </Row>
 
         {/* When */}
-        <div className="rounded-2xl border-[1.5px] border-line bg-card/60 p-4 space-y-4">
+        <div className="space-y-4 rounded-2xl border border-line bg-card/60 p-4">
           <Row label={c.date} htmlFor="date">
             <div className="no-scrollbar -mx-4 flex gap-1.5 overflow-x-auto px-4">
               {dateChips.map((d) => (
