@@ -32,7 +32,7 @@ export function AppShell() {
     resyncPush()
   }, [])
   // No floating "+" on forms — the save button lives there.
-  const showFab = !/\/(new|edit)$/.test(pathname)
+  const showFab = !/\/(new|edit)$/.test(pathname) && !pathname.startsWith('/checkin')
   return (
     <div className="min-h-dvh lg:grid lg:grid-cols-[248px_1fr]">
       {/* Desktop sidebar */}
