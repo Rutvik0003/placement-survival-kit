@@ -1,18 +1,20 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { BackBar } from '../components/BackBar'
 import { EmptyState } from '../components/EmptyState'
 import { Loading } from '../components/Loading'
 import { ConfirmSheet } from '../components/Sheet'
+import { MoodPicker } from '../components/MoodPicker'
 import { CompanyTile, StatusStamp, TypeTag } from '../components/Stamps'
 import { useToast } from '../components/Toast'
 import { IconAlert, IconChevron, IconEdit, IconLink, IconTrash } from '../components/Icons'
-import { useDeleteEvent, useEvent, useEventsBetween } from '../hooks/queries'
+import { useDeleteEvent, useEvent, useEventsBetween, useSaveEvent } from '../hooks/queries'
 import { useNow } from '../hooks/useNow'
 import { clashesFor, interval } from '../lib/clash'
 import { EVENT_META } from '../lib/meta'
+import { supabase } from '../lib/supabase'
 import { addISTDays, countdown, durationLabel, fmtIST, relDay, startOfISTDay } from '../lib/time'
-import { clashCopy, commonCopy, eventDetailCopy as c, nextUpCopy } from '../copy'
+import { checkinCopy, clashCopy, commonCopy, eventDetailCopy as c, nextUpCopy } from '../copy'
 
 export default function EventDetail() {
   const { id } = useParams()
@@ -22,6 +24,18 @@ export default function EventDetail() {
   const toast = useToast()
   const now = useNow(1000)
   const [confirm, setConfirm] = useState(false)
+  const save = useSaveEvent()
+
+  // Opening the event counts as "seen" — cancels the escalating nag.
+  useEffect(() => {
+    if (!id) return
+    supabase
+      .from('notifications_sent')
+      .update({ acknowledged_at: new Date().toISOString() })
+      .eq('event_id', id)
+      .is('acknowledged_at', null)
+      .then(() => undefined)
+  }, [id])
 
   const dayStart = useMemo(() => addISTDays(startOfISTDay(event?.starts_at ?? Date.now()), -1), [event?.starts_at])
   const { data: nearby = [] } = useEventsBetween(dayStart, addISTDays(dayStart, 3))
@@ -155,6 +169,20 @@ export default function EventDetail() {
             </ul>
           </div>
         </div>
+      )}
+
+      {!upcoming && event.type !== 'deadline' && (
+        <section className="mt-6">
+          <p className="label">{checkinCopy.current}</p>
+          <MoodPicker
+            value={event.mood}
+            disabled={save.isPending}
+            onPick={async (mood) => {
+              await save.mutateAsync({ id: event.id, mood })
+              toast.show({ message: checkinCopy.reply[mood], duration: 5000 })
+            }}
+          />
+        </section>
       )}
 
       {event.notes && (

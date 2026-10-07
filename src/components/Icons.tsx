@@ -119,3 +119,21 @@ export const IconAlert = (p: P) => (
     <path d="M12 10v4M12 17v.01" />
   </svg>
 )
+export const IconBell = (p: P) => (
+  <svg {...base(p)}>
+    <path d="M6 16V11a6 6 0 1 1 12 0v5l1.5 2h-15L6 16z" />
+    <path d="M10 20.5a2 2 0 0 0 4 0" />
+  </svg>
+)
+export const IconShare = (p: P) => (
+  <svg {...base(p)}>
+    <path d="M12 3v12M8 7l4-4 4 4" />
+    <path d="M6 11H5a1.5 1.5 0 0 0-1.5 1.5v7A1.5 1.5 0 0 0 5 21h14a1.5 1.5 0 0 0 1.5-1.5v-7A1.5 1.5 0 0 0 19 11h-1" />
+  </svg>
+)
+export const IconPlusSquare = (p: P) => (
+  <svg {...base(p)}>
+    <rect x="4" y="4" width="16" height="16" rx="3.5" />
+    <path d="M12 8.5v7M8.5 12h7" />
+  </svg>
+)

@@ -20,3 +20,6 @@ export {
   eventDetailCopy,
   commonCopy,
 } from './core'
+export { notifCopy, installCopy, checkinCopy } from './notifications'
+// Push notification text is shared with the server — edit it here:
+export * as pushCopy from '../../supabase/functions/_shared/notificationCopy'

@@ -9,3 +9,5 @@ dev-dist
 supabase/.temp
 .claude
 *.tsbuildinfo
+supabase/functions/.env
+*.local.sql

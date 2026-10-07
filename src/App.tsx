@@ -11,6 +11,7 @@ import CompanyDetail from './pages/CompanyDetail'
 import CompanyForm from './pages/CompanyForm'
 import EventDetail from './pages/EventDetail'
 import EventForm from './pages/EventForm'
+import CheckIn from './pages/CheckIn'
 import Login from './pages/Login'
 import Placeholder from './pages/Placeholder'
 import Settings from './pages/Settings'
@@ -39,6 +40,7 @@ export default function App() {
         <Route path="events/new" element={<EventForm />} />
         <Route path="events/:id" element={<EventDetail />} />
         <Route path="events/:id/edit" element={<EventForm key="edit" />} />
+        <Route path="checkin/:id" element={<CheckIn />} />
         <Route path="stats" element={<Placeholder kicker="Season so far" title="Stats" empty={emptyCopy.stats} />} />
         <Route path="settings" element={<Settings />} />
         <Route path="*" element={<Navigate to="/" replace />} />

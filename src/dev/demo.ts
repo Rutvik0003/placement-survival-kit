@@ -99,7 +99,11 @@ function seed() {
       ? [{ id: uid(), user_id: USER, company_id: c.id, from_status: 'applied', to_status: 'interview', changed_at: c.created_at }]
       : []),
   ])
-  return { companies, events, company_status_history: history } as Record<string, Row[]>
+  const settings = [{ user_id: USER, push_enabled: true, quiet_start: null, quiet_end: null, ghost_after_days: 14, samosas_per_ppt: 2 }]
+  return { companies, events, company_status_history: history, settings, push_subscriptions: [], notifications_sent: [] } as Record<
+    string,
+    Row[]
+  >
 }
 
 const db = seed()
@@ -120,6 +124,13 @@ class Query {
   }
   eq(c: string, v: unknown) {
     this.filters.push((r) => r[c] === v)
+    return this
+  }
+  is(c: string, v: unknown) {
+    this.filters.push((r) => (r[c] ?? null) === v)
+    return this
+  }
+  upsert() {
     return this
   }
   gte(c: string, v: string) {
@@ -213,8 +224,12 @@ export function createDemoClient() {
       select: (cols?: string) => new Query(table, 'select').select(cols),
       insert: (p: Row) => new Query(table, 'insert', p),
       update: (p: Row) => new Query(table, 'update', p),
+      upsert: (p: Row) => new Query(table, 'insert', p),
       delete: () => new Query(table, 'delete'),
     }),
+    functions: {
+      invoke: async () => ({ data: { delivered: 0, errors: ['Demo mode — nothing is sent.'] }, error: null }),
+    },
     auth: {
       getSession: async () => ({ data: { session } }),
       onAuthStateChange: () => ({ data: { subscription: { unsubscribe() {} } } }),

@@ -14,11 +14,6 @@ export const settingsCopy = {
   title: 'Settings',
   appearance: { title: 'Appearance', hint: 'Light, dark, or whatever your phone decides.' },
   account: { title: 'Account', hint: 'One seat. One candidate. You.', signOut: 'Sign out' },
-  notifications: {
-    title: 'Notifications',
-    hint: 'Push reminders, test button, quiet hours.',
-    later: 'Arrives in Phase 4. Until then, reminders are your own memory. Good luck.',
-  },
 } as const
 
 // Shown when Supabase keys are missing.

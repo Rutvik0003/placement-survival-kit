@@ -1,9 +1,10 @@
 import { Link, NavLink, Outlet, useLocation } from 'react-router-dom'
-import type { ComponentType, SVGProps } from 'react'
+import { useEffect, type ComponentType, type SVGProps } from 'react'
 import { IconCompanies, IconPlus, IconSettings, IconStats, IconToday } from './Icons'
 import { LogoMark } from './Logo'
 import { useNow } from '../hooks/useNow'
 import { fmtIST } from '../lib/time'
+import { resyncPush } from '../lib/push'
 
 type NavItem = { to: string; label: string; icon: ComponentType<SVGProps<SVGSVGElement>> }
 
@@ -27,6 +28,9 @@ function Clock() {
 
 export function AppShell() {
   const { pathname } = useLocation()
+  useEffect(() => {
+    resyncPush()
+  }, [])
   // No floating "+" on forms — the save button lives there.
   const showFab = !/\/(new|edit)$/.test(pathname)
   return (

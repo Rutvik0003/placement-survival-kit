@@ -4,6 +4,7 @@ import { PageHeader } from '../components/PageHeader'
 import { EventCard } from '../components/EventCard'
 import { NextUp } from '../components/NextUp'
 import { Loading } from '../components/Loading'
+import { RemindersNudge } from '../components/RemindersNudge'
 import { useNow } from '../hooks/useNow'
 import { useCompanies, useEventsFrom } from '../hooks/queries'
 import { findClashes, interval } from '../lib/clash'
@@ -132,6 +133,7 @@ export default function Home() {
         }
         title={homeCopy.greeting[greetingIST(now)]}
       />
+      <RemindersNudge />
 
       {isLoading ? (
         <Loading />
