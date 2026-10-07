@@ -1,0 +1,215 @@
+@import 'tailwindcss';
+@import '@fontsource-variable/bricolage-grotesque';
+@import '@fontsource-variable/geist';
+@import '@fontsource-variable/geist-mono';
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ── Design tokens ─────────────────────────────────────────────
+   "Notice board": paper, ink, a signal-orange marker, rubber-stamp
+   colours for statuses. Change colours here, not in components. */
+:root {
+  --paper: #f2eee4;
+  --paper-2: #e9e3d6;
+  --card: #fbf9f4;
+  --ink: #16140f;
+  --ink-2: #3a362d;
+  --muted: #7a7366;
+  --line: #d9d1c0;
+  --marker: #ff4f1f;
+  --marker-ink: #ffffff;
+  --highlight: #f4e04d;
+  --stamp-green: #2c7a4b;
+  --stamp-red: #c8352a;
+  --stamp-blue: #2f5bd3;
+  --stamp-amber: #b7791f;
+  --ghost: #8b8fa3;
+  --grain-opacity: 0.35;
+  color-scheme: light;
+}
+
+.dark {
+  --paper: #14130f;
+  --paper-2: #1c1a16;
+  --card: #201e19;
+  --ink: #efe9dc;
+  --ink-2: #cfc7b6;
+  --muted: #8f8778;
+  --line: #34312a;
+  --marker: #ff6a3d;
+  --marker-ink: #14130f;
+  --highlight: #e6d23f;
+  --stamp-green: #5fbf85;
+  --stamp-red: #ff6b5e;
+  --stamp-blue: #7c9cff;
+  --stamp-amber: #e3a948;
+  --ghost: #8f94a8;
+  --grain-opacity: 0.18;
+  color-scheme: dark;
+}
+
+@theme inline {
+  --color-paper: var(--paper);
+  --color-paper-2: var(--paper-2);
+  --color-card: var(--card);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-marker: var(--marker);
+  --color-marker-ink: var(--marker-ink);
+  --color-highlight: var(--highlight);
+  --color-stamp-green: var(--stamp-green);
+  --color-stamp-red: var(--stamp-red);
+  --color-stamp-blue: var(--stamp-blue);
+  --color-stamp-amber: var(--stamp-amber);
+  --color-ghost: var(--ghost);
+
+  --font-display: 'Bricolage Grotesque Variable', ui-sans-serif, system-ui, sans-serif;
+  --font-sans: 'Geist Variable', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'Geist Mono Variable', ui-monospace, monospace;
+
+  --shadow-card: 0 1px 0 var(--line), 0 1px 2px rgb(0 0 0 / 0.04);
+  --shadow-lift: 3px 3px 0 var(--ink);
+}
+
+@layer base {
+  html {
+    -webkit-tap-highlight-color: transparent;
+    text-size-adjust: 100%;
+  }
+  body {
+    @apply bg-paper text-ink font-sans antialiased;
+    min-height: 100dvh;
+    font-feature-settings: 'ss01', 'cv11';
+  }
+  /* Paper grain — a tiny inline SVG noise, no network request. */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    opacity: var(--grain-opacity);
+    mix-blend-mode: multiply;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .09 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+  .dark body::before {
+    mix-blend-mode: screen;
+  }
+  #root {
+    position: relative;
+    z-index: 1;
+  }
+  :focus-visible {
+    outline: 2px solid var(--marker);
+    outline-offset: 2px;
+    border-radius: 6px;
+  }
+  ::selection {
+    background: var(--highlight);
+    color: #16140f;
+  }
+}
+
+@layer components {
+  /* Rubber stamp: statuses, labels. */
+  .stamp {
+    @apply inline-flex items-center gap-1 font-mono text-[11px] font-semibold uppercase tracking-[0.08em] px-1.5 py-0.5 rounded-[4px] border-[1.5px];
+  }
+  /* Highlighter swipe behind a word. */
+  .hl {
+    background: linear-gradient(
+      100deg,
+      transparent 0.2em,
+      color-mix(in oklab, var(--highlight) 85%, transparent) 0.3em,
+      color-mix(in oklab, var(--highlight) 70%, transparent) calc(100% - 0.3em),
+      transparent calc(100% - 0.2em)
+    );
+    padding: 0 0.15em;
+    margin: 0 -0.15em;
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
+  }
+  .dark .hl {
+    color: #16140f;
+  }
+  /* Ticket perforation (dashed divider). */
+  .perf {
+    background-image: linear-gradient(to right, var(--line) 50%, transparent 50%);
+    background-size: 8px 1.5px;
+    background-repeat: repeat-x;
+    height: 1.5px;
+  }
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 h-11 font-medium text-[15px] transition-[transform,background-color,box-shadow] duration-150 select-none disabled:opacity-50 disabled:pointer-events-none active:translate-y-px;
+  }
+  /* Use as: class="btn btn-primary" */
+  .btn-primary {
+    @apply bg-ink text-paper hover:bg-ink-2;
+  }
+  .btn-marker {
+    @apply bg-marker text-marker-ink border-[1.5px] border-ink;
+    box-shadow: var(--shadow-lift);
+  }
+  .btn-marker:active {
+    box-shadow: 1px 1px 0 var(--ink);
+    transform: translate(2px, 2px);
+  }
+  .btn-ghost {
+    @apply text-ink-2 hover:bg-paper-2;
+  }
+  .field {
+    @apply w-full h-12 rounded-xl bg-card border-[1.5px] border-line px-3.5 text-[16px] text-ink placeholder:text-muted outline-none transition-colors focus:border-ink;
+  }
+  .label {
+    @apply block font-mono text-[11px] uppercase tracking-[0.1em] text-muted mb-1.5;
+  }
+}
+
+/* Safe areas for notched phones in standalone mode. */
+.pt-safe {
+  padding-top: env(safe-area-inset-top);
+}
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.rise {
+  animation: rise 0.35s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+@keyframes stamp-in {
+  0% {
+    opacity: 0;
+    transform: scale(1.6) rotate(-8deg);
+  }
+  60% {
+    opacity: 1;
+    transform: scale(0.95) rotate(-4deg);
+  }
+  100% {
+    transform: scale(1) rotate(-4deg);
+  }
+}
+.stamp-in {
+  animation: stamp-in 0.45s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
