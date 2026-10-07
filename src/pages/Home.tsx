@@ -13,7 +13,7 @@ import { findClashes, interval } from '../lib/clash'
 import { ALL_STATUSES, EVENT_META, STATUS_META } from '../lib/meta'
 import { addISTDays, dayKey, fmtIST, greetingIST, relDay, startOfISTDay } from '../lib/time'
 import type { EventRow } from '../lib/types'
-import { homeCopy, timelineCopy as t } from '../copy'
+import { addCopy, homeCopy, timelineCopy as t } from '../copy'
 
 function SectionTitle({ children, count }: { children: React.ReactNode; count?: number }) {
   return (
@@ -97,6 +97,21 @@ function PipelineSummary() {
   )
 }
 
+/** Shown until the first company exists: companies first, events later. */
+function FirstRun() {
+  const { data: companies } = useCompanies()
+  if (!companies || companies.length > 0) return null
+  return (
+    <div className="rise mb-6 rounded-2xl border border-dashed border-ink/30 bg-card px-5 py-5">
+      <p className="font-display text-[19px] font-semibold tracking-tight">{addCopy.firstRun.title}</p>
+      <p className="mt-1 max-w-[52ch] text-[14.5px] leading-relaxed text-muted">{addCopy.firstRun.body}</p>
+      <Link to="/companies/new" className="btn btn-primary mt-4 h-10 text-[14px]">
+        + {addCopy.firstRun.cta}
+      </Link>
+    </div>
+  )
+}
+
 export default function Home() {
   const now = useNow()
   const dayStart = useMemo(() => startOfISTDay(now), [dayKey(now)]) // eslint-disable-line react-hooks/exhaustive-deps
@@ -139,6 +154,7 @@ export default function Home() {
         title={homeCopy.greeting[greetingIST(now)]}
       />
       <RemindersNudge />
+      <FirstRun />
 
       {isLoading ? (
         <Loading />

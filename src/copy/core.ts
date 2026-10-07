@@ -189,3 +189,17 @@ export const commonCopy = {
   deleted: 'Deleted.',
   error: 'That didn’t save. Check your connection and try again.',
 } as const
+
+// The "+" button menu and the first-run nudge on Today.
+export const addCopy = {
+  title: 'What are we adding?',
+  company: { title: 'Company', hint: 'Just applied? The name is enough. Events can come later.' },
+  event: { title: 'Event', titleHere: 'Event for this company', hint: 'PPT, test, GD, interview or a deadline.' },
+  sidebarCompany: 'Company',
+  sidebarEvent: 'Event',
+  firstRun: {
+    title: 'Start with the companies.',
+    body: 'Add every company you’ve applied to — just the name is fine. PPTs, tests and interviews go inside each one when they’re announced.',
+    cta: 'Add a company',
+  },
+} as const

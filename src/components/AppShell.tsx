@@ -4,7 +4,8 @@ import { IconCompanies, IconPlus, IconSettings, IconStats, IconToday } from './I
 import { LogoMark } from './Logo'
 import { BadgeWatcher } from './BadgeWatcher'
 import { Loading } from './Loading'
-import { offlineCopy } from '../copy'
+import { AddSheet } from './AddSheet'
+import { addCopy, offlineCopy } from '../copy'
 import { useNow } from '../hooks/useNow'
 import { fmtIST } from '../lib/time'
 import { resyncPush } from '../lib/push'
@@ -52,6 +53,9 @@ export function AppShell() {
   }, [])
   // No floating "+" on forms — the save button lives there.
   const showFab = !/\/(new|edit)$/.test(pathname) && !/^\/(checkin|offer|wrapped)/.test(pathname)
+  const [adding, setAdding] = useState(false)
+  // On a company's page, "Event" is prefilled with that company.
+  const companyHere = pathname.match(/^\/companies\/([0-9a-f-]{36})$/)?.[1]
   return (
     <div className="min-h-dvh lg:grid lg:grid-cols-[248px_1fr]">
       <BadgeWatcher />
@@ -69,9 +73,14 @@ export function AppShell() {
             <p className="mt-1 font-mono text-[10px] uppercase tracking-[0.14em] text-muted">Placement season</p>
           </div>
         </div>
-        <Link to="/events/new" className="btn btn-marker mt-7 w-full">
-          <IconPlus width={18} height={18} /> Add event
-        </Link>
+        <div className="mt-7 grid grid-cols-2 gap-2">
+          <Link to="/companies/new" className="btn btn-primary h-10 px-2 text-[14px]">
+            <IconPlus width={16} height={16} /> {addCopy.sidebarCompany}
+          </Link>
+          <Link to={companyHere ? `/events/new?company=${companyHere}` : '/events/new'} className="btn btn-marker h-10 px-2 text-[14px]">
+            <IconPlus width={16} height={16} /> {addCopy.sidebarEvent}
+          </Link>
+        </div>
         <nav className="mt-6 flex flex-col gap-1" aria-label="Main">
           {nav.map(({ to, label, icon: Icon }) => (
             <NavLink
@@ -103,14 +112,15 @@ export function AppShell() {
 
       {/* Mobile: floating add button */}
       {showFab && (
-        <Link
-          to="/events/new"
-          aria-label="Add event"
+        <button
+          onClick={() => setAdding(true)}
+          aria-label={addCopy.title}
           className="fixed bottom-[calc(env(safe-area-inset-bottom)+5rem)] right-4 z-30 grid h-14 w-14 place-items-center rounded-2xl border-[1.5px] border-ink bg-marker text-marker-ink shadow-[3px_3px_0_var(--ink)] transition-transform active:translate-x-[2px] active:translate-y-[2px] active:shadow-[1px_1px_0_var(--ink)] lg:hidden"
         >
           <IconPlus width={26} height={26} strokeWidth={2.2} />
-        </Link>
+        </button>
       )}
+      <AddSheet open={adding} onClose={() => setAdding(false)} companyId={companyHere} />
 
       {/* Mobile bottom bar */}
       <nav

@@ -19,6 +19,7 @@ export {
   eventFormCopy,
   eventDetailCopy,
   commonCopy,
+  addCopy,
 } from './core'
 export { notifCopy, installCopy, checkinCopy } from './notifications'
 // Push notification text is shared with the server — edit it here:
