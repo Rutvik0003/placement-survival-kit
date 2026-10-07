@@ -35,4 +35,6 @@ export {
   wrappedCopy,
   seasonCopy,
   funSettingsCopy,
+  wrappedMore,
+  personas,
 } from './fun'

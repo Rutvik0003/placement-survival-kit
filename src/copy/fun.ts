@@ -9,6 +9,13 @@ export const graveyardCopy = {
   partyKicker: 'You got an offer. The dead are celebrating.',
   empty: { title: 'The graveyard is empty.', body: 'Nobody has ghosted you yet. Give it time. They’re busy “evaluating profiles”.' },
   rip: 'RIP',
+  emptySign: 'Plots available',
+  dragHint: 'Drag to look around · tap a grave',
+  resurrect: 'They called back!',
+  resurrected: (name: string) => `${name} rose from the dead. Status reset to Applied.`,
+  openCompany: 'Open company',
+  silence: 'Silence',
+  lastWords: 'Last words',
   daysSilent: (n: number) => (n === 1 ? '1 day of silence' : `${n} days of silence`),
   appliedOn: 'Applied',
   lastHeard: 'Last heard',
@@ -43,6 +50,9 @@ export const badgesCopy = {
   locked: 'Locked',
   earned: 'Earned',
   unlocked: (name: string) => `Badge unlocked: ${name}`,
+  seeAll: 'See collection',
+  nice: 'Noted.',
+  next: (n: number) => `Next (${n} more)`,
   emptyHint: 'Badges unlock from rejections, ghostings and other character-building events. Enjoy having none.',
 } as const
 
@@ -165,6 +175,32 @@ export const wrappedCopy = {
     again: 'Watch again',
     close: 'Close',
   },
+} as const
+
+export const wrappedMore = {
+  introLines: ['Placement', 'season', 'wrapped.'],
+  sticker: 'PLACEMENT SEASON · WRAPPED · ',
+  companiesKicker: 'You applied to',
+  eventsSub: (n: number) => (n ? `${n} events total. Your calendar has filed a complaint.` : 'Zero events. Bold strategy.'),
+  topKicker: 'Your most frequent visitor',
+  topSub: (n: number) => `${n} events together. Basically a situationship.`,
+  topNone: 'No repeat visitors. Commitment issues, theirs not yours.',
+  emailLine: (n: number) => (n === 1 ? '1 PPT could have been an email.' : `${n} PPTs could have been emails.`),
+  moodsTop: { nailed: 'Mostly nailed it. Suspiciously confident.', survived: 'Mostly survived. The baseline, achieved repeatedly.', dont_ask: 'Mostly “don’t ask”. We won’t.' },
+  stamp: 'REJECTED',
+  personaKicker: 'Your placement persona',
+  summaryTitle: 'Season summary',
+  summaryLabels: { companies: 'Companies', events: 'Events', offers: 'Offers', rejections: 'Rejections', samosas: 'Samosas', formals: 'Formals' },
+} as const
+
+export const personas = {
+  closer: { emoji: '🏆', name: 'The Closer', line: 'Came, saw, got an offer. Still refreshed the portal.' },
+  ghost_whisperer: { emoji: '👻', name: 'The Ghost Whisperer', line: 'Companies vanish around you. It’s a gift, technically.' },
+  collector: { emoji: '🎟️', name: 'The Collector', line: 'Rejections are just badges with extra paperwork.' },
+  connoisseur: { emoji: '🥟', name: 'The PPT Connoisseur', line: 'You’ve seen more “Our Culture” slides than most HR teams.' },
+  night_owl: { emoji: '🦉', name: 'The Night Owl', line: 'Your schedule happens when normal people sleep.' },
+  optimist: { emoji: '📨', name: 'The Optimist', line: 'Applied everywhere. Statistically sound, emotionally exhausting.' },
+  rookie: { emoji: '🌱', name: 'The Rookie', line: 'Early days. The chaos hasn’t found you yet. It will.' },
 } as const
 
 // ─── Season hub ──────────────────────────────────────────────────────────

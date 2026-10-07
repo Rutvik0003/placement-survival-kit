@@ -56,6 +56,10 @@ function seed() {
     mk('Hooli', 'applied', { role: 'SDE-1', ctc_lpa: 24, location: 'Remote', emoji: '🦄' }),
     mk('Stark Industries', 'offer', { role: 'Design Engineer', ctc_lpa: 12, location: 'Chennai', emoji: '⚙️' }),
     mk('Wayne Enterprises', 'rejected', { role: 'Consultant', ctc_lpa: 11 }),
+    mk('Cyberdyne', 'ghosted', { role: 'ML Intern', ctc_lpa: 16, emoji: '🤖', created_at: iso(now - 60 * D), last_contact_at: iso(now - 41 * D) }),
+    mk('Oceanic Airlines', 'ghosted', { role: 'Analyst', created_at: iso(now - 50 * D), last_contact_at: iso(now - 33 * D) }),
+    mk('Vandelay Industries', 'ghosted', { role: 'Importer-Exporter', created_at: iso(now - 30 * D), last_contact_at: iso(now - 19 * D) }),
+    mk('Pied Piper', 'ghosted', { role: 'SDE', ctc_lpa: 22, created_at: iso(now - 35 * D), last_contact_at: iso(now - 15 * D) }),
     mk('Soylent Corp', 'ghosted', { role: 'Sales Trainee', ctc_lpa: 21, created_at: iso(now - 45 * D), last_contact_at: iso(now - 26 * D) }),
   ]
   const C = Object.fromEntries(companies.map((c) => [c.name, c.id]))

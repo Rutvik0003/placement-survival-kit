@@ -94,6 +94,8 @@ export function chaosLevel(weekEvents: EventRow[], clashCount: number) {
 
 // ─── Placement Wrapped ───────────────────────────────────────────────────
 
+export type PersonaKey = 'closer' | 'ghost_whisperer' | 'collector' | 'connoisseur' | 'night_owl' | 'optimist' | 'rookie'
+
 export function wrappedStats(
   companies: Company[],
   events: EventRow[],
@@ -126,7 +128,39 @@ export function wrappedStats(
   const moods = { nailed: 0, survived: 0, dont_ask: 0 }
   for (const e of events) if (e.mood) moods[e.mood]++
 
+  const perCompany = new Map<string, number>()
+  for (const e of events) perCompany.set(e.company_id, (perCompany.get(e.company_id) ?? 0) + 1)
+  const topEntry = [...perCompany.entries()].sort((a, b) => b[1] - a[1])[0]
+  const topCo = topEntry ? companies.find((co) => co.id === topEntry[0]) : undefined
+  const odd = events.filter((e) => e.type !== 'deadline').filter((e) => {
+    const h = hourIST(e.starts_at)
+    return h >= 21 || h < 8
+  }).length
+  const offers = companies.filter((co) => co.status === 'offer').length
+  const rejections = companies.filter((co) => co.status === 'rejected').length
+  const ghosted = companies.filter((co) => co.status === 'ghosted').length
+  const persona: PersonaKey =
+    offers > 0
+      ? 'closer'
+      : ghosted >= 3 && ghosted >= rejections
+        ? 'ghost_whisperer'
+        : rejections >= 5
+          ? 'collector'
+          : count('ppt') >= 5
+            ? 'connoisseur'
+            : events.length >= 4 && odd / events.length >= 0.3
+              ? 'night_owl'
+              : companies.length >= 10
+                ? 'optimist'
+                : 'rookie'
+
   return {
+    persona,
+    totalEvents: past.length,
+    topCompany: topCo && topEntry ? { name: topCo.name, emoji: topCo.emoji, count: topEntry[1] } : null,
+    emailPpts: ratings.filter((r) => r.could_be_email).length,
+    tiles: companies.slice(0, 12).map((co) => ({ name: co.name, emoji: co.emoji })),
+    ghosted,
     companies: companies.length,
     ppt: count('ppt'),
     test: count('test'),
@@ -138,9 +172,9 @@ export function wrappedStats(
     moods,
     formals: formals.length,
     samosas: count('ppt') * samosasPerPpt,
-    rejections: companies.filter((c) => c.status === 'rejected').length,
+    rejections,
     badges,
-    offers: companies.filter((c) => c.status === 'offer').length,
+    offers,
   }
 }
 
