@@ -1,12 +1,13 @@
 import type { ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import { PageHeader } from '../components/PageHeader'
+import { SeasonStats } from '../components/SeasonStats'
 import { IconChevron } from '../components/Icons'
 import { useCompanies } from '../hooks/queries'
 import { useBadges, useFormals } from '../hooks/fun'
 import { useSettings } from '../hooks/useSettings'
 import { BADGE_KEYS, ghostSuspects } from '../lib/fun'
-import { formalsCopy, graveyardCopy, seasonCopy as c, wrappedCopy } from '../copy'
+import { formalsCopy, graveyardCopy, seasonCopy as c, statsCopy, wrappedCopy } from '../copy'
 
 function HubCard({ to, emoji, title, body, extra }: { to: string; emoji: string; title: string; body: string; extra?: ReactNode }) {
   return (
@@ -48,6 +49,10 @@ export default function Season() {
         </span>
       </Link>
 
+      <h2 className="mb-3 mt-8 font-display text-[20px] font-bold tracking-tight">{statsCopy.title}</h2>
+      <SeasonStats />
+
+      <h2 className="mb-3 mt-8 font-display text-[20px] font-bold tracking-tight">{c.extras}</h2>
       <div className="space-y-3">
         <HubCard
           to="/graveyard"

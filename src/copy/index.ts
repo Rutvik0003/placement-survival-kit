@@ -4,7 +4,7 @@ export { pick } from './pick'
 export { loadingLines } from './loading'
 export { authCopy } from './auth'
 export { emptyCopy } from './empty'
-export { homeCopy, settingsCopy, setupCopy } from './home'
+export { homeCopy, settingsCopy, setupCopy, offlineCopy } from './home'
 export {
   statusLabels,
   eventTypeLabels,
@@ -37,4 +37,5 @@ export {
   funSettingsCopy,
   wrappedMore,
   personas,
+  statsCopy,
 } from './fun'

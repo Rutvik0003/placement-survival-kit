@@ -10,4 +10,10 @@ export const loadingLines = [
   'Ironing a shirt, metaphorically…',
   'Calculating the odds. Not sharing them.',
   'Fetching data. Also fetching patience.',
+  'Asking the senior who “knows someone in HR”…',
+  'Converting CTC to in-hand. Please lower your expectations…',
+  'Waiting for the coordinator to forward the forwarded email…',
+  'Checking whether “shortlist by EOD” meant today…',
+  'Pretending the 2-year bond is fine…',
+  'Locating the one formal shirt…',
 ] as const

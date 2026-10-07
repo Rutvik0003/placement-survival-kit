@@ -1,3 +1,4 @@
+import { lazy } from 'react'
 import { Navigate, Route, Routes } from 'react-router-dom'
 import { useAuth } from './auth/AuthProvider'
 import { AppShell } from './components/AppShell'
@@ -8,17 +9,19 @@ import { setupCopy } from './copy'
 import Home from './pages/Home'
 import Companies from './pages/Companies'
 import CompanyDetail from './pages/CompanyDetail'
-import CompanyForm from './pages/CompanyForm'
 import EventDetail from './pages/EventDetail'
-import EventForm from './pages/EventForm'
-import CheckIn from './pages/CheckIn'
-import Season from './pages/Season'
-import Graveyard from './pages/Graveyard'
-import Badges from './pages/Badges'
-import Offer from './pages/Offer'
-import Wrapped from './pages/Wrapped'
 import Login from './pages/Login'
-import Settings from './pages/Settings'
+
+// Less-used screens load on demand (the service worker still caches them for offline use).
+const CompanyForm = lazy(() => import('./pages/CompanyForm'))
+const EventForm = lazy(() => import('./pages/EventForm'))
+const CheckIn = lazy(() => import('./pages/CheckIn'))
+const Season = lazy(() => import('./pages/Season'))
+const Graveyard = lazy(() => import('./pages/Graveyard'))
+const Badges = lazy(() => import('./pages/Badges'))
+const Offer = lazy(() => import('./pages/Offer'))
+const Wrapped = lazy(() => import('./pages/Wrapped'))
+const Settings = lazy(() => import('./pages/Settings'))
 
 export default function App() {
   const { session, loading } = useAuth()

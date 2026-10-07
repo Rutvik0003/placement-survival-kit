@@ -1,8 +1,10 @@
 import { Link, NavLink, Outlet, useLocation } from 'react-router-dom'
-import { useEffect, type ComponentType, type SVGProps } from 'react'
+import { Suspense, useEffect, useState, type ComponentType, type SVGProps } from 'react'
 import { IconCompanies, IconPlus, IconSettings, IconStats, IconToday } from './Icons'
 import { LogoMark } from './Logo'
 import { BadgeWatcher } from './BadgeWatcher'
+import { Loading } from './Loading'
+import { offlineCopy } from '../copy'
 import { useNow } from '../hooks/useNow'
 import { fmtIST } from '../lib/time'
 import { resyncPush } from '../lib/push'
@@ -27,7 +29,23 @@ function Clock() {
   )
 }
 
+function useOnline() {
+  const [online, setOnline] = useState(() => navigator.onLine)
+  useEffect(() => {
+    const on = () => setOnline(true)
+    const off = () => setOnline(false)
+    window.addEventListener('online', on)
+    window.addEventListener('offline', off)
+    return () => {
+      window.removeEventListener('online', on)
+      window.removeEventListener('offline', off)
+    }
+  }, [])
+  return online
+}
+
 export function AppShell() {
+  const online = useOnline()
   const { pathname } = useLocation()
   useEffect(() => {
     resyncPush()
@@ -37,6 +55,11 @@ export function AppShell() {
   return (
     <div className="min-h-dvh lg:grid lg:grid-cols-[248px_1fr]">
       <BadgeWatcher />
+      {!online && (
+        <div role="status" className="pt-safe fixed inset-x-0 top-0 z-50 bg-ink text-center text-[12.5px] text-paper lg:left-[248px]">
+          <p className="py-1.5">{offlineCopy}</p>
+        </div>
+      )}
       {/* Desktop sidebar */}
       <aside className="sticky top-0 hidden h-dvh flex-col border-r-[1.5px] border-line px-4 py-6 lg:flex">
         <div className="flex items-center gap-2.5 px-2">
@@ -73,7 +96,9 @@ export function AppShell() {
 
       {/* Content */}
       <main className="pt-safe mx-auto w-full max-w-5xl px-4 pb-28 sm:px-6 lg:px-10 lg:pb-12 lg:pt-6">
-        <Outlet />
+        <Suspense fallback={<Loading />}>
+          <Outlet />
+        </Suspense>
       </main>
 
       {/* Mobile: floating add button */}

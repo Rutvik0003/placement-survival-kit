@@ -189,3 +189,28 @@ export function ghostSuspects(companies: Company[], afterDays: number, now = Dat
       (!c.ghost_suggest_snoozed_until || Date.parse(c.ghost_suggest_snoozed_until) < now),
   )
 }
+
+// ─── Season stats ────────────────────────────────────────────────────────
+
+/** Headline numbers + how far each company got down the pipeline (from history, so later rejections still count). */
+export function seasonStats(companies: Company[], events: EventRow[], history: HistoryRow[]) {
+  const pipeline = ['applied', 'shortlisted', 'test', 'interview', 'offer'] as const
+  const reached = new Map<string, number>()
+  for (const co of companies) reached.set(co.id, Math.max(0, pipeline.indexOf(co.status as (typeof pipeline)[number])))
+  for (const h of history) {
+    const i = pipeline.indexOf(h.to_status as (typeof pipeline)[number])
+    if (i > (reached.get(h.company_id) ?? -1) && reached.has(h.company_id)) reached.set(h.company_id, i)
+  }
+  const funnel = pipeline.map((stage, i) => ({ stage, count: [...reached.values()].filter((r) => r >= i).length }))
+  const now = Date.now()
+  return {
+    applied: companies.length,
+    tests: events.filter((e) => e.type === 'test').length,
+    interviews: events.filter((e) => e.type === 'interview').length,
+    offers: companies.filter((c) => c.status === 'offer').length,
+    rejections: companies.filter((c) => c.status === 'rejected').length,
+    ghosts: companies.filter((c) => c.status === 'ghosted').length,
+    upcoming: events.filter((e) => Date.parse(e.starts_at) > now).length,
+    funnel,
+  }
+}

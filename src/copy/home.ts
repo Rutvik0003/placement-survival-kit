@@ -21,3 +21,6 @@ export const setupCopy = {
   title: 'Keys missing.',
   body: 'The app can’t find your Supabase URL and key. Create a .env.local file (copy .env.example) and restart the dev server — or add them in Vercel → Settings → Environment Variables and redeploy.',
 } as const
+
+// Shown at the top when the phone has no internet.
+export const offlineCopy = 'Offline. Showing what I remember. Changes need a connection.'

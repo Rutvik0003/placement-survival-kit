@@ -230,8 +230,8 @@ I'll give click-by-click steps at each phase.
 ## 7. Phases
 
 1. **Plan** — this document. ✅
-2. **Foundation** — scaffold Vite/React/TS/Tailwind/PWA, Supabase project, email + password login, schema + RLS migrations, deploy to Vercel.
-3. **Core tracking** — companies, events, status pipeline (tap/swipe), Today/This-week timeline with pinned countdown, clash detector.
-4. **Notifications** — push subscription, service worker, `tick`/`ack`/`send-test` functions, pg_cron, digest/heads-up/nag/check-in, idempotency, iOS install prompt, quiet hours, settings.
-5. **Fun layer** — snarky copy bank, check-ins, ghost graveyard, rejection badges, company nicknames, chaos meter, PPT ratings, nag escalation, offer day mode, Placement Wrapped, formals counter.
-6. **Polish** — season stats + funnel, dark mode pass, empty states, loading messages, final Android + iPhone test checklist, how-it-works walkthrough, free-tier list.
+2. **Foundation** — scaffold Vite/React/TS/Tailwind/PWA, Supabase project, email + password login, schema + RLS migrations, deploy to Vercel. ✅
+3. **Core tracking** — companies, events, status pipeline (tap/swipe), Today/This-week timeline with pinned countdown, clash detector. ✅
+4. **Notifications** — push subscription, service worker, `tick`/`ack`/`send-test` functions, pg_cron, digest/heads-up/nag/check-in, idempotency, iOS install prompt, quiet hours, settings. ✅
+5. **Fun layer** — snarky copy bank, check-ins, ghost graveyard, rejection badges, company nicknames, chaos meter, PPT ratings, nag escalation, offer day mode, Placement Wrapped, formals counter. ✅
+6. **Polish** — season stats + funnel, dark mode pass, empty states, loading messages, final Android + iPhone test checklist, how-it-works walkthrough, free-tier list. ✅

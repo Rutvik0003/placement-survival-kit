@@ -203,10 +203,27 @@ export const personas = {
   rookie: { emoji: '🌱', name: 'The Rookie', line: 'Early days. The chaos hasn’t found you yet. It will.' },
 } as const
 
+// ─── Season stats ────────────────────────────────────────────────────────
+export const statsCopy = {
+  title: 'Season stats',
+  tiles: { applied: 'Applied', tests: 'Tests', interviews: 'Interviews', offers: 'Offers', rejections: 'Rejections', ghosts: 'Ghosts' },
+  funnelTitle: 'The funnel',
+  funnelHint: 'How far companies got before the inevitable.',
+  ofApplied: (p: number) => `${p}%`,
+  empty: 'No companies yet. The funnel is just a tube.',
+  verdict: (applied: number, offers: number) =>
+    applied === 0
+      ? 'Add a company and the numbers start judging you.'
+      : offers > 0
+        ? `${Math.round((offers / applied) * 100)}% conversion. Better than most startups.`
+        : 'Zero offers so far. The funnel is still loading.',
+} as const
+
 // ─── Season hub ──────────────────────────────────────────────────────────
 export const seasonCopy = {
   kicker: 'Season so far',
   title: 'Season',
+  extras: 'The fun stuff',
   graveyard: { title: 'Ghost Graveyard', body: (n: number) => (n ? `${n} resting in peace` : 'Empty. For now.') },
   badges: { title: 'Badges', body: (got: number, total: number) => `${got}/${total} collected` },
   wrapped: { title: 'Placement Wrapped', body: 'The recap. Swipe through it.' },
