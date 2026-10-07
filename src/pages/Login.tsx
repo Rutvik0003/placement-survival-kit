@@ -9,9 +9,12 @@ import { fmtIST, nowIST } from '../lib/time'
 
 function explain(err: AuthError) {
   const msg = err.message.toLowerCase()
+  if (msg.includes('invalid login credentials')) return c.errors.badLogin
+  if (msg.includes('email not confirmed')) return c.errors.notConfirmed
+  if (msg.includes('api key') || err.status === 401) return c.errors.badKey
   if (err.status === 429 || msg.includes('rate')) return c.errors.rate
-  if (err.status === 400 || msg.includes('invalid')) return c.errors.badLogin
-  return c.errors.generic
+  if (msg.includes('fetch') || msg.includes('network')) return c.errors.network
+  return `${c.errors.generic} (${err.message})`
 }
 
 const stamps = [
